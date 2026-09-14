@@ -34,3 +34,17 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+### Hi there, I'm Farhan 👋
+
+I am a self-taught Web3 & Smart Contract Developer focused on building robust, gas-optimized, and secure decentralized applications. 
+
+- 🔭 Currently deep-diving into **Solidity Architecture, EVM mechanics, and DeFi primitives**.
+- 🛠️ Stacking up experience with Hardhat, Ethers.js, Next.js, and Wagmi.
+- ⚡ Fun fact: Currently building custom staking protocols and mastering blockchain state management.
+
+### 🛠️ Tech Stack & Tools
+- **Languages:** Solidity, JavaScript, TypeScript
+- **Frameworks:** Hardhat, Next.js, React, Wagmi / Viem
+- **Networks:** Ethereum, Base Sepolia Testnet
+
