@@ -54,6 +54,8 @@ export default function Home() {
   const [isUnStake, setIsUnStake] = useState(false);
   const [isBalance, setIsBalance] = useState(false);
   const { address } = useAccount();
+  const [pendingReward, setPendingReward] = useState("0");
+  const [unlockTime, setUnlockTime] = useState(0);
 
   const setBalances = useDappStore((state) => state.setBalances);
 
@@ -87,18 +89,24 @@ export default function Home() {
     const stakingContract = new Contract(STAKING_ADDRESS, STAKING_ABI, provider);
     const rawStaked = await stakingContract.stakedBalances(address);
 
+    const rawTimestamp = await stakingContract.stakeTimestamp(address);
+
+    const rawReward = (rawStaked * BigInt(10)) / BigInt(100);
   
      const formattedEth = ethers.formatEther(rawEth);
      const formattedKhd = ethers.formatEther(rawKhd);
      const formattedStaked = ethers.formatEther(rawStaked);
+     const formattedReward = ethers.formatEther(rawReward);
     
      console.log(" Saldo Staking di Tarik Dari Jaringan:", formattedStaked);
      toast.dismiss("home-toast");
-     toast.success("Inii Yang Sesuai,Jangan ngide dah..");
 
     setBalance(formattedEth);
     setKhdBalance(formattedKhd);
     setStakedBalance(formattedStaked);
+
+    setPendingReward(formattedReward);
+    setUnlockTime(Number(rawTimestamp) + 60);
 
     setBalances(formattedEth, formattedKhd, formattedStaked);
   } catch (error: unknown) {
@@ -117,6 +125,8 @@ export default function Home() {
   }, [address]);
 
   const TARGET_CHAIN_ID = '0x14a34';
+  const currentTime = Math.floor(Date.now() / 1000);
+  const isLocked = currentTime < unlockTime && Number(stakedBalance) > 0;
 
   const checkAndSwitchNetwork = async () => {
     const ethereum = window.ethereum;
@@ -353,15 +363,28 @@ const handleClaim = async () => {
     const stakingContract = new Contract(STAKING_ADDRESS, STAKING_ABI, signer);
     
     toast.loading("Tunggu yaa Reward nya lagi di prosses", { id: "claim-toast"});
-    toast.success("Cek Metamask lu bro, konfirmasi transaksi claim rewards!");
+   
     const tx = await stakingContract.claimReward();
     await tx.wait();
     
     toast.dismiss("claim-toast");
     toast.success("Claim rewards berhasil, Saldo bakal di-refresh!");
 
+    setTimeout(() => {
+      console.log("Reflesh Pertama...");
+      fetchBalances(userAddress);
+    }, 2000);
+
+    setTimeout(() => {
+      console.log("Reflesh ke dua....");
+      fetchBalances(userAddress);
+    }, 6000);
+
     fetchBalances(userAddress);
   } catch (error: unknown) {
+
+    toast.dismiss("claim-toast");
+
     const reason = getErrorMessage(error);
     const err = error as ContractError;
     if (err.code !== "CALL_EXCEPTION" && err.code !== "ACTION_REJECTED") {
@@ -433,15 +456,26 @@ const handleCompound = async () => {
     const stakingContract = new Contract(STAKING_ADDRESS, STAKING_ABI, signer);
     
     toast.loading("Tunggu ya bro lagi prosess...", {id: "compound-toast"});
-    toast.success("Cek Metamask Bro, Konfirmasi Compound nya");
+    
     const tx = await stakingContract.autoCompound();
     await tx.wait();
     
     toast.dismiss("compound-toast");
     toast.success("Gebleeeh seleteh,Gampang kan bro??");
 
+    setTimeout(() => {
+      console.log("Reflesh Pertama...");
+      fetchBalances(userAddress);
+    }, 2000);
+
+    setTimeout(() => {
+      console.log("Reflesh ke dua....");
+      fetchBalances(userAddress);
+    }, 6000);
+
     fetchBalances(userAddress);
   } catch (error: unknown) {
+    toast.dismiss("compound-toast");
     console.log("Gagal bro,Ulang lagi ya,Semoga di lancarkan!!!", error);
 
     const message = getErrorMessage(error);
@@ -475,6 +509,7 @@ try {
   const unStakingContract = new Contract(STAKING_ADDRESS, STAKING_ABI, signer);
   
   toast.loading("Loading yaa,Udah Unstake aja,rugi dong!!", { id: "unstake-toast"});
+  
   const txUnStake = await unStakingContract.withdraw(amountToUnStake);
   await txUnStake.wait();
   
@@ -483,6 +518,15 @@ try {
 
   setStakeAmount("");
 
+    setTimeout(() => {
+      console.log("Reflesh Pertama...");
+      fetchBalances(userAddress);
+    }, 2000);
+
+    setTimeout(() => {
+      console.log("Reflesh ke dua....");
+      fetchBalances(userAddress);
+    }, 6000);
 
   fetchBalances(userAddress);
 
@@ -534,6 +578,27 @@ try {
             <p className="font-bold text-lg text-green-400">{stakedBalance || "0"} KHD</p>
             </div>
           </div>
+
+          {Number(stakedBalance) > 0 && (
+            <div className="flex justify-between text-center bg-gray-800/80 p-4 rounded-xl border border-yellow-700/50 mt-2">
+              <div>
+                <p className="text-yellow-500 text-xl font-bold">Pending Reward 10%</p>
+                <p className="font-bold text-lg text-yellow-400">{pendingReward} KHD</p>
+              </div>
+              <div className="text-right">
+              <p className="text-gray-400 text-xs">Status Penarikan</p>
+              {isLocked ? (
+                <span className="inline-flex items-center gap-1 text-xs font-bold text-red-400 bg-red-400/10 px-2 py-1 rounded-md mt-1">
+                  Terkunci
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-xs font-bold text-green-400 bg-green-400/10 px-2 py-1 rounded-md mt-1">
+                  Bisa Di Tarik nih
+                </span>
+              )}
+              </div>
+              </div>
+          )}
 
             <div>
             <input

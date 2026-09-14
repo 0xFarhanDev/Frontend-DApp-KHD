@@ -73,7 +73,7 @@ export const CONTRACT_ABI = [
     "function transfer(address to, uint256 amount) returns (bool)",
     "function approve(address spender, uint256 amount) returns (bool)",
   ];
-  export const STAKING_ADDRESS = "0x0567E8BA8EFa25ca5CB3E83005199295698A7E49";
+  export const STAKING_ADDRESS = "0x398cD50BBB0e22BE62877F9f9690d8fB5507547A";
 
   export const STAKING_ABI = [
         "function stakedBalances(address) view returns (uint256)",
@@ -202,6 +202,25 @@ export const CONTRACT_ABI = [
           "internalType": "contract IERC20",
           "name": "",
           "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "lastClaimTimestamp",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
