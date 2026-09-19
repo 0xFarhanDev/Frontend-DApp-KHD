@@ -1,4 +1,4 @@
-export const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+export const CONTRACT_ADDRESS = "0x56B577CE76DE4C615326B06c9Fb1d7DF9D164089";
 
 export const CONTRACT_ABI = [
 {
@@ -73,7 +73,7 @@ export const CONTRACT_ABI = [
     "function transfer(address to, uint256 amount) returns (bool)",
     "function approve(address spender, uint256 amount) returns (bool)",
   ];
-  export const STAKING_ADDRESS = "0x398cD50BBB0e22BE62877F9f9690d8fB5507547A";
+  export const STAKING_ADDRESS = "0xdED7eD4370604fBae91B262F9fAcC3E27571E2aA";
 
   export const STAKING_ABI = [
         "function stakedBalances(address) view returns (uint256)",
@@ -81,7 +81,7 @@ export const CONTRACT_ABI = [
     "function withdraw(uint256 amount) external",
     "function claimReward() external",
     {
-       "inputs": [
+        "inputs": [
         {
           "internalType": "address",
           "name": "_tokenAddress",
@@ -90,6 +90,38 @@ export const CONTRACT_ABI = [
       ],
       "stateMutability": "nonpayable",
       "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "EnforcedPause",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ExpectedPause",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
     },
     {
       "anonymous": false,
@@ -108,6 +140,38 @@ export const CONTRACT_ABI = [
         }
       ],
       "name": "Compounded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "Paused",
       "type": "event"
     },
     {
@@ -146,6 +210,19 @@ export const CONTRACT_ABI = [
         }
       ],
       "name": "Staked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "Unpaused",
       "type": "event"
     },
     {
@@ -195,6 +272,19 @@ export const CONTRACT_ABI = [
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "emergancyWithdrawToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "khdToken",
       "outputs": [
@@ -224,6 +314,46 @@ export const CONTRACT_ABI = [
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "paused",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -294,6 +424,26 @@ export const CONTRACT_ABI = [
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "unpause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
