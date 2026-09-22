@@ -73,7 +73,7 @@ export const CONTRACT_ABI = [
     "function transfer(address to, uint256 amount) returns (bool)",
     "function approve(address spender, uint256 amount) returns (bool)",
   ];
-  export const STAKING_ADDRESS = "0xdED7eD4370604fBae91B262F9fAcC3E27571E2aA";
+  export const STAKING_ADDRESS = "0xEA26c72eaf47D162970043531D569edf4911575B";
 
   export const STAKING_ABI = [
         "function stakedBalances(address) view returns (uint256)",
@@ -81,7 +81,7 @@ export const CONTRACT_ABI = [
     "function withdraw(uint256 amount) external",
     "function claimReward() external",
     {
-        "inputs": [
+      "inputs": [
         {
           "internalType": "address",
           "name": "_tokenAddress",
@@ -124,6 +124,11 @@ export const CONTRACT_ABI = [
       "type": "error"
     },
     {
+      "inputs": [],
+      "name": "ReentrancyGuardReentrantCall",
+      "type": "error"
+    },
+    {
       "anonymous": false,
       "inputs": [
         {
@@ -136,6 +141,12 @@ export const CONTRACT_ABI = [
           "indexed": false,
           "internalType": "uint256",
           "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
           "type": "uint256"
         }
       ],
@@ -188,6 +199,12 @@ export const CONTRACT_ABI = [
           "internalType": "uint256",
           "name": "amount",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
         }
       ],
       "name": "RewardClaimed",
@@ -206,6 +223,12 @@ export const CONTRACT_ABI = [
           "indexed": false,
           "internalType": "uint256",
           "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
           "type": "uint256"
         }
       ],
@@ -239,6 +262,18 @@ export const CONTRACT_ABI = [
           "internalType": "uint256",
           "name": "amount",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "feeAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
         }
       ],
       "name": "Withdrawn",
@@ -262,6 +297,25 @@ export const CONTRACT_ABI = [
       "name": "autoCompound",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "calculateRewards",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -306,6 +360,19 @@ export const CONTRACT_ABI = [
         }
       ],
       "name": "lastClaimTimestamp",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "maxStakePerUser",
       "outputs": [
         {
           "internalType": "uint256",
@@ -450,13 +517,33 @@ export const CONTRACT_ABI = [
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "amount",
+          "name": "_newMax",
           "type": "uint256"
         }
       ],
+      "name": "updadeMaxStake",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "withdraw",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "withdrawalFeePercentage",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     }
   ];

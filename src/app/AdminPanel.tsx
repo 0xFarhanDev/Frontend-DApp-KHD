@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Contract, ethers } from "ethers";
-import { STAKING_ADDRESS, STAKING_ABI } from "./constants";
+import { STAKING_ADDRESS, STAKING_ABI, KHD_ADDRESS } from "./constants";
 import toast from "react-hot-toast";
+
 
 export default function AdminPanel({ currentAccount }: { currentAccount: string }) {
     const [isOwner, setIsOwner] = useState (false);
     const [isPaused, setIsPaused] = useState (false);
     const [emWithdrawAmount, setEmWithrawAmount] = useState("");
+    const [maxStakePerUser, setMaxStakePerUser] = useState("");
 
     useEffect(() => {
         checkAdminStatus();
@@ -114,6 +116,33 @@ export default function AdminPanel({ currentAccount }: { currentAccount: string 
         toast.error("Error Emergancy Witdraw bro");
         console.error(error);
     }
+};
+    const handleMaxStakePerUser = async () => {
+        if (!maxStakePerUser || (Number(maxStakePerUser)) <= 0) {
+            toast.error("Berapa Max Terbaru?!!");
+            return;
+        }
+      try {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const contract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
+
+        const mount = ethers.parseUnits(maxStakePerUser, 18);
+
+        toast.loading("Lagi Update Limit ya Bro",{id : "maxStakePerUser-toast"});
+
+        const tx = await contract.updadeMaxStake(mount);
+        await tx.wait();
+
+        toast.dismiss("maxStakePerUser-toast");
+        toast.success(`Oke bro Max Limit nya Udah Update ${maxStakePerUser}`);
+
+        setMaxStakePerUser("");
+      } catch (error: unknown) {
+        toast.dismiss("maxStakePerUser-toast");
+        toast.error("Error Bro Ulang lagi Update nya");
+        console.error(error);
+    } 
   };
   if(!isOwner) return null;
 
@@ -145,6 +174,19 @@ export default function AdminPanel({ currentAccount }: { currentAccount: string 
             <button onClick={handleEmergancyWithdraw} style={{ background: "red", color: "white", padding: "10px 20px", cursor: "pointer", border: "none", borderRadius: "5px"}}>
                 Tarik Darurat KHD
             </button>
+            </div>
+            <div className="mt-4 border-t border-gray-700 pt-4">
+                <p className="text-green text-sm font-bold mb-2">Update Max Stake</p>
+                <input
+                type="number"
+                placeholder="Berapa KHD Max Stake?"
+                value={maxStakePerUser}
+                onChange={(e) => setMaxStakePerUser(e.target.value)}
+                className="w-full bg-gray-900 border border-green-900/50 rounded-xl px-4 py-2 textw-white mb-3 focus:outline-none focus:border-green-500 transition-colors"
+                />
+                <button onClick={handleMaxStakePerUser} style={{ background: "green", color: "white", padding: "10px 20px", cursor: "pointer", border: "none", borderRadius: "5px"}}>
+                    Update Max Stake
+                </button>
         
         </div>
     </div>

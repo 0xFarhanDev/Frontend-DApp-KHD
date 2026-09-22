@@ -11,6 +11,8 @@ import { useDappStore } from '../store/useDappStore';
 import AdminPanel from "./AdminPanel";
 import { time } from "console";
 
+const OWNER_ADDRESS = "0x2c5205e39443212d22Eb917B70F946315a2beD07";
+
 type EthereumProvider = {
   request?: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
 };
@@ -331,14 +333,28 @@ const handleStake = async () => {
     const ethereum = getEthereum();
     if (!ethereum) {
       toast.error("MetaMask belum terinstall!");
+      setIsStaking(false);
       return;
     }
 
     const provider = new BrowserProvider(ethereum as never);
     const signer = await provider.getSigner();
-    const amountToStake = parseUnits(normalizedStakeAmount, 18);
+
     const khdContract = new Contract(KHD_ADDRESS, KHD_ABI, signer);
     const stakingContract = new Contract(STAKING_ADDRESS, STAKING_ABI, signer);
+
+    const currentMaxStake = await stakingContract.maxStakePerUser();
+    const userStake = await stakingContract.stakedBalances(signer.address);
+    const amountToStake = ethers.parseUnits(normalizedStakeAmount, 18);
+    
+    const projectedTotal = userStake + amountToStake;
+   
+     if (projectedTotal > currentMaxStake) {
+      const maxAngka = ethers.formatUnits(currentMaxStake, 18);
+      toast.error(`Kebanyakan KHD!! Max nya: ${maxAngka} KHD`);
+      setIsStaking(false);
+      return;
+    }
 
     toast.loading("Lagi Minta Izin (Approve) koin Khd...", { id: "stake-toast"});
     const txApprove = await khdContract.approve(STAKING_ADDRESS, amountToStake);
@@ -420,10 +436,10 @@ const handleWithdraw = async () => {
     const provider = new BrowserProvider(ethereum as never);
     const signer = await provider.getSigner();
     const stakingContract = new Contract(STAKING_ADDRESS, STAKING_ABI, signer);
-    const withdrawAmount = parseUnits(stakedBalance, 18);
 
+    
     toast.loading("Loading bro, Mau narik nih??", { id: "withdraw-toast" });
-    const withdrawTx = await stakingContract.withdraw(withdrawAmount);
+    const withdrawTx = await stakingContract.withdraw();
     await withdrawTx.wait();
     
     toast.dismiss("withdraw-toast");
@@ -492,12 +508,11 @@ try {
 
   const provider = new BrowserProvider(ethereum as never);
   const signer = await provider.getSigner();
-  const amountToUnStake = parseUnits(stakedBalance, 18);
   const unStakingContract = new Contract(STAKING_ADDRESS, STAKING_ABI, signer);
   
   toast.loading("Loading yaa,Udah Unstake aja,rugi dong!!", { id: "unstake-toast"});
   
-  const txUnStake = await unStakingContract.withdraw(amountToUnStake);
+  const txUnStake = await unStakingContract.withdraw();
   await txUnStake.wait();
   
   toast.dismiss("unstake-toast");
@@ -530,7 +545,9 @@ const handleMaxStake = () => {
 
       <div className="absolute top-6 right-6">
         <ConnectButton/>
+        {address && address.toLowerCase() === OWNER_ADDRESS.toLowerCase() && (
         <AdminPanel currentAccount={address || ""} />
+        )}
       </div>
 
       <h1 className="text-4xl font-extrabold mb-8 mt-10 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">
