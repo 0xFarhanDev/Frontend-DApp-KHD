@@ -51,6 +51,7 @@ export default function Home() {
   const [transferAmount, setTransferAmount] = useState("");
   const [stakeAmount, setStakeAmount] = useState("");
   const [stakedBalance, setStakedBalance] = useState("0");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const [isStaking, setIsStaking] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
@@ -77,13 +78,12 @@ export default function Home() {
   const ethereum = getEthereum()
   if (typeof window === "undefined" || !ethereum) return;
 
-  try {
-    const ethereum = getEthereum();
-    if(!ethereum) 
-      return;
-
     const provider = new BrowserProvider(ethereum as never);
-
+   
+    try {
+      const ethereum = getEthereum();
+      if (!ethereum) return;
+      
     const network = await provider.getNetwork();
     if (Number(network.chainId) !== 84532) {
       console.log("Lagi salah jaringan, Skip narik saldo dulu.");
@@ -98,7 +98,7 @@ export default function Home() {
 
     const stakingContract = new Contract(STAKING_ADDRESS, STAKING_ABI, provider);
     const rawStaked = await stakingContract.stakedBalances(address);
-
+    
     const lastClaimRaw = await stakingContract.lastClaimTimestamp(address);
     const nextTime = Number(lastClaimRaw) + 60;
     setNextClaimtime(nextTime);
@@ -546,7 +546,8 @@ const handleMaxStake = () => {
       <div className="absolute top-6 right-6">
         <ConnectButton/>
         {address && address.toLowerCase() === OWNER_ADDRESS.toLowerCase() && (
-        <AdminPanel currentAccount={address || ""} />
+        <AdminPanel currentAccount={address || ""}
+                    onRefreshBalance={() => fetchBalances(address as string)} />
         )}
       </div>
 

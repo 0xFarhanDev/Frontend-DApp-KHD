@@ -4,7 +4,7 @@ import { STAKING_ADDRESS, STAKING_ABI, KHD_ADDRESS } from "./constants";
 import toast from "react-hot-toast";
 
 
-export default function AdminPanel({ currentAccount }: { currentAccount: string }) {
+export default function AdminPanel({ currentAccount, onRefreshBalance }: { currentAccount: string, onRefreshBalance: () => void }) {
     const [isOwner, setIsOwner] = useState (false);
     const [isPaused, setIsPaused] = useState (false);
     const [emWithdrawAmount, setEmWithrawAmount] = useState("");
@@ -44,7 +44,7 @@ export default function AdminPanel({ currentAccount }: { currentAccount: string 
 
     const handlePaused = async () => {
         try { 
-            const provider = new ethers.BrowserProvider(window.ethereum);
+            const provider = new ethers.BrowserProvider((window as any).ethereum);
             const signer = await provider.getSigner();
             const contract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
 
@@ -66,7 +66,7 @@ export default function AdminPanel({ currentAccount }: { currentAccount: string 
 
     const handleUnpause = async () => {
         try {
-            const provider = new ethers.BrowserProvider(window.ethereum);
+            const provider = new ethers.BrowserProvider((window as any).ethereum);
             const signer = await provider.getSigner();
             const contract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
 
@@ -94,7 +94,7 @@ export default function AdminPanel({ currentAccount }: { currentAccount: string 
         return;
     }
     try {
-        const provider = new ethers.BrowserProvider(window.ethereum);
+        const provider = new ethers.BrowserProvider((window as any).ethereum);
         const signer = await provider.getSigner();
         const contract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
 
@@ -110,6 +110,9 @@ export default function AdminPanel({ currentAccount }: { currentAccount: string 
         
         setEmWithrawAmount("");
 
+        setTimeout(() => onRefreshBalance(), 2000);
+        setTimeout(() => onRefreshBalance(), 5000);
+
 
     } catch (error: unknown) {
         toast.dismiss("emwithdraw-toast");
@@ -123,7 +126,7 @@ export default function AdminPanel({ currentAccount }: { currentAccount: string 
             return;
         }
       try {
-        const provider = new ethers.BrowserProvider(window.ethereum);
+        const provider = new ethers.BrowserProvider((window as any).ethereum);
         const signer = await provider.getSigner();
         const contract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
 
@@ -147,48 +150,61 @@ export default function AdminPanel({ currentAccount }: { currentAccount: string 
   if(!isOwner) return null;
 
   return (
-    <div style={{ padding: "20px", border: "2x dasher red", borderRadius: "10px", marginTop: "20px" }}>
-        <h3 style={{ color: "red", margin: "0 0 10px 0" }}>Admin Panel: (Si Kehed Admin)</h3>
-        <p style={{ fontWeight: "bold"}}> Status Kontrak: {isPaused ? "Paused" : "Active Bre"}</p>
+    <div className="max-w-md mx-auto mt-4 bg-red-900/30 border border-bg-red-500/50 rounded-2xl p-6 shadow-xl backdrop-blur-sm w-full">
+        <h2 className="text-xl font-bold text-red-400 mb-4 flex items-center gap-2">
+            Zona KEHED Sesungguhnya!!
+        </h2>
+        <div className="flex flex-col gap-4">
 
-        <div style={{ display: "flex", gap: "10px", marginTop: "15px"}}>
+            <div className="bg-black/40 p-3 rounded-lg border border-gray-700 flex justify-between items-center">
+             <span className="text-gray-300">Status Kontrak:</span>
+             <span className={`font-bold ${isPaused ? 'text-red-500' : 'text-green-500'}`}>
+                {isPaused ? "Paused(Stop)" : "Aktif(Lanjut)"}
+                </span> 
+             </div>
             {isPaused ? (
-                <button onClick={handleUnpause} style={{ background: "green", color: "white", padding: "10px 20px", cursor: "pointer", border: "none", borderRadius: "5px"}}>
+                <button onClick={handleUnpause} className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-xl transition-all shadow-[0_0_15px_rgba(34,197,94,0.4)]">
                     Buka Gembok (Unpause)
                 </button>
             ) : (
-                <button onClick={handlePaused} style={{ background: "orange", color: "black", padding: "10px 20px", cursor: "pointer", border: "none", borderRadius: "5px"}}>
+                <button onClick={handlePaused} className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-xl transition-all shadow-[0_0_15px_rgba(234,88,12,0.4)]">
                     Kunci Gembok (Pause)
                 </button>
             )}
-            </div>
-            <div className="mt-4 border-t border-gray-700 pt-4">
-                <p className="text-red text-sm font-bold mb-2">Wilayah Kehed Only</p>
+
+            <hr className="border-red-500/30 my-2"/>
+            <div className="flex flex-col gap-2">
+                <label className="text-sm text-gray-300">Tarik KHD Darurat</label>
+            <div className="flex gap-2">
                 <input
-                type="text"
+                type="Number"
                 placeholder="Jumlah KHD Yang urgent"
                 value={emWithdrawAmount}
                 onChange={(e) => setEmWithrawAmount(e.target.value)}
-                className="w-full bg-gray-900 border border-red-900/50 rounded-xl px-4 py-2 text-white mb-3 focus:outline-none focus:border-red-500 trasition-colors"
-            />
-            <button onClick={handleEmergancyWithdraw} style={{ background: "red", color: "white", padding: "10px 20px", cursor: "pointer", border: "none", borderRadius: "5px"}}>
+                className="bg-black/50 border border-gray-600 rounded-lg px-3 py-2 text-white w-full focus:outline-none focus:border-red-500"
+                />
+            <button onClick={handleEmergancyWithdraw} className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-all whitespace-nowrap">
                 Tarik Darurat KHD
             </button>
             </div>
-            <div className="mt-4 border-t border-gray-700 pt-4">
-                <p className="text-green text-sm font-bold mb-2">Update Max Stake</p>
+            <hr className="border-red-500/30 my-2"/>
+            <div className="flex flex-col gap-2">
+                <label className="texr-sm text-gray-300">Update Max Stake</label>
+            <div className="flex gap-2">
                 <input
                 type="number"
                 placeholder="Berapa KHD Max Stake?"
                 value={maxStakePerUser}
                 onChange={(e) => setMaxStakePerUser(e.target.value)}
-                className="w-full bg-gray-900 border border-green-900/50 rounded-xl px-4 py-2 textw-white mb-3 focus:outline-none focus:border-green-500 transition-colors"
+                className="bg-black/50 border border-gray-600 rounded-lg px-3 py-2 text-white w-full focus:outline-none focus:border-red-500"
                 />
-                <button onClick={handleMaxStakePerUser} style={{ background: "green", color: "white", padding: "10px 20px", cursor: "pointer", border: "none", borderRadius: "5px"}}>
+                <button onClick={handleMaxStakePerUser} className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-all whitespace-nowrap">
                     Update Max Stake
                 </button>
-        
+                </div>
+            </div>
+          </div>
         </div>
     </div>
   );
-}
+} 
