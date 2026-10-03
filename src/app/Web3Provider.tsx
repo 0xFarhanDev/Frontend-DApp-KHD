@@ -3,13 +3,19 @@
 import '@rainbow-me/rainbowkit/styles.css';
 import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
+import { http } from 'wagmi';
 import {sepolia, hardhat, baseSepolia} from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 const config = getDefaultConfig({
-  appName: "0xb2018a97fC407e72E045A9189c008AA14FCd1aCe",
-  projectId: "Kehed Blegug",
+  appName: "Staking Kehed",
+  projectId: "3e2d0b314d83484a01ee5312bd9b709e",
   chains: [baseSepolia, sepolia, hardhat],
+  transports: {
+    [baseSepolia.id]: http('https://sepolia.base.org'),
+    [sepolia.id]: http(),
+    [hardhat.id]: http(),
+  },
   ssr: true, // If your dApp uses server side rendering (SSR)
 });
 
