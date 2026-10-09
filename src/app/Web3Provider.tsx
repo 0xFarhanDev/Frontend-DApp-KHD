@@ -9,7 +9,7 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 const config = getDefaultConfig({
   appName: "Staking Kehed",
-  projectId: "3e2d0b314d83484a01ee5312bd9b709e",
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "",
   chains: [baseSepolia, sepolia, hardhat],
   transports: {
     [baseSepolia.id]: http('https://sepolia.base.org'),
